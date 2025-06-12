@@ -137,6 +137,13 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+    });
+    window.dispatchEvent(new Event("resize"));
+
     const vertexShaderSrc = document.getElementById("vertexShader").textContent;
     const fragmentShaderSrc = document.getElementById("fragmentShader").textContent;
 
@@ -220,7 +227,7 @@
         currentMouse[1] += (targetMouse[1] - currentMouse[1]) * 0.1;
 
         // Optional: animate size for hover effect (e.g., grow slightly near center)
-        const defaultSize = [200.0, 70.0];
+        const defaultSize = targetSize;
         const enlargedSize = [240.0, 85.0];
         const growNearCenter = Math.exp(-Math.pow((targetMouse[0] - canvas.width / 2) / 300, 2)); // gaussian distance falloff
         targetSize[0] = defaultSize[0] + (enlargedSize[0] - defaultSize[0]) * growNearCenter;
