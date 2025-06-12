@@ -129,7 +129,7 @@
         vec2 normal = getNormal(pixelUV, center, size, radius);
         vec2 domeNormalContour = normal * pow(contourFalloff, 1.5);
         vec2 refractVecContour = refract(vec2(0.0), domeNormalContour, eta);
-        vec2 uvContour = v_uv + refractVecContour * 0.035 * contourFalloff;
+        vec2 uvContour = v_uv + refractVecContour * 0.35 * contourFalloff;
 
         // Blend based on distance from edge and radial distance
 //        float edgeWeight = smoothstep(0.0, 0.2, abs(dist));
