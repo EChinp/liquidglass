@@ -15,10 +15,32 @@
             width: 100%;
             height: 100%;
         }
+        #icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: center center;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .app-icon {
+            width: 48px;
+            height: 48px;
+        }
+
     </style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
+<div id="icons" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+    <img src="icons/icon1.png" class="app-icon" />
+    <img src="icons/icon2.png" class="app-icon" />
+    <img src="icons/icon3.png" class="app-icon" />
+</div>
 <script id="fragmentShader" type="x-shader/x-fragment">
     precision highp float;
     uniform sampler2D u_background;
@@ -219,6 +241,14 @@
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, background);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        const iconWrapper = document.getElementById("icons");
+        // Position the icon wrapper at the button center
+        iconWrapper.style.transform = `
+            translate(${currentMouse[0]}px, ${currentMouse[1]}px)
+            translate(-50%, -50%)
+            scale(${currentSize[0] / 200}, ${currentSize[1] / 70})
+        `;
 
         requestAnimationFrame(draw);
     }
