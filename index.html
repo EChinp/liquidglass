@@ -67,7 +67,7 @@
     <img src="icons/icon3.png" class="app-icon" />
 </div>
 <script id="fragmentShader" type="x-shader/x-fragment">
-    precision highp float;
+    precision mediump float;
     uniform sampler2D u_background;
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
@@ -83,8 +83,8 @@
         vec3 result = vec3(0.0);
         float total = 0.0;
         float radius = 3.0;
-        for (int x = -3; x <= 3; ++x) {
-            for (int y = -3; y <= 3; ++y) {
+        for (int x = -3; x <= 3; x++) {
+            for (int y = -3; y <= 3; y++) {
                 vec2 offset = vec2(float(x), float(y)) * 2.0 / resolution;
                 float weight = exp(-(float(x * x + y * y)) / (2.0 * radius));
                 result += texture2D(u_background, uv + offset).rgb * weight;
@@ -196,7 +196,7 @@
 </script>
 <script>
     const canvas = document.getElementById("canvas");
-    const gl = canvas.getContext("webgl", { antialias: true });
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
