@@ -75,20 +75,25 @@
     }
 
     vec2 getNormal(vec2 uv, vec2 center, vec2 size, float radius) {
-        vec2 eps = vec2(1.0) / u_resolution;
+        vec2 eps = vec2(1.0) / u_resolution * 2.0;
         vec2 p = uv - center;
 
         float sdfCenter = roundedBoxSDF(p, size, radius);
-        float dx = roundedBoxSDF(p + vec2(eps.x, 0.0), size, radius) - sdfCenter;
-        float dy = roundedBoxSDF(p + vec2(0.0, eps.y), size, radius) - sdfCenter;
+        float dx = (roundedBoxSDF(p + vec2(eps.x, 0.0), size, radius) - roundedBoxSDF(p - vec2(eps.x, 0.0), size, radius)) * 0.5;
+        float dy = (roundedBoxSDF(p + vec2(0.0, eps.y), size, radius) - roundedBoxSDF(p - vec2(0.0, eps.y), size, radius)) * 0.5;
 
         vec2 gradient = vec2(dx, dy);
 
-        // Clamp extremely low magnitude gradients (in center) to zero to avoid white artifact
+        // Optional: smooth corners by blending with diagonal gradients
+        float dxy1 = roundedBoxSDF(p + eps, size, radius);
+        float dxy2 = roundedBoxSDF(p - eps, size, radius);
+        vec2 diag = vec2(dxy1 - dxy2);
+
+        gradient = mix(gradient, diag, 0.25); // adjust 0.25 to smooth more/less
+
         if (length(gradient) < 0.001) {
             return vec2(0.0);
         }
-
         return normalize(gradient);
     }
 
