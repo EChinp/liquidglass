@@ -182,25 +182,34 @@
     let currentMouse = [...targetMouse];
 
     const enlargedSize = [200.0, 70.0];
-    let targetSize = [enlargedSize[0] * .8, enlargedSize[1] * .8];
+    const defaultSize = [enlargedSize[0] * .5, enlargedSize[1] * .5];
+    let targetSize = defaultSize;
     let currentSize = [...targetSize];
 
     canvas.addEventListener("mousemove", e => {
         targetMouse = [e.clientX, e.clientY];
     });
 
-    function draw() {
-        currentMouse[0] += (targetMouse[0] - currentMouse[0]) * 0.1;
-        currentMouse[1] += (targetMouse[1] - currentMouse[1]) * 0.1;
+    let lastTime = performance.now();
 
-        // Optional: animate size for hover effect (e.g., grow slightly near center)
-        const defaultSize = targetSize;
-        const growNearCenter = Math.exp(-Math.pow((targetMouse[0] - canvas.width / 2) / 300, 2)); // gaussian distance falloff
+    function draw(now) {
+        const delta = (now - lastTime) / 1000;
+        lastTime = now;
+
+        const speed = 5.0; // animation speed in units per second
+
+        // Tween position
+        currentMouse[0] += (targetMouse[0] - currentMouse[0]) * speed * delta;
+        currentMouse[1] += (targetMouse[1] - currentMouse[1]) * speed * delta;
+
+        // Optional: animate size for hover effect
+        const growNearCenter = Math.exp(-Math.pow((targetMouse[0] - canvas.width / 2) / 300, 2));
         targetSize[0] = defaultSize[0] + (enlargedSize[0] - defaultSize[0]) * growNearCenter;
         targetSize[1] = defaultSize[1] + (enlargedSize[1] - defaultSize[1]) * growNearCenter;
 
-        currentSize[0] += (targetSize[0] - currentSize[0]) * 0.1;
-        currentSize[1] += (targetSize[1] - currentSize[1]) * 0.1;
+        // Tween size with delta time
+        currentSize[0] += (targetSize[0] - currentSize[0]) * speed * delta;
+        currentSize[1] += (targetSize[1] - currentSize[1]) * speed * delta;
 
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -210,6 +219,7 @@
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, background);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
+
         requestAnimationFrame(draw);
     }
 </script>
