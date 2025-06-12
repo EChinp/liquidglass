@@ -1,4 +1,4 @@
-# 🍏 Liquid Crass
+# 🍏 Liquid GL-Ass
 
 ![demo.gif](demo.gif)
 
