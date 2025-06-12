@@ -203,7 +203,17 @@
     let targetMouse = [canvas.width / 2, canvas.height / 2];
     let currentMouse = [...targetMouse];
 
-    const enlargedSize = [200.0, 70.0];
+    const iconWrapper = document.getElementById("icons");
+    const numIcons = iconWrapper.children.length;
+    const iconSize = 48;
+    const iconGap = 12;
+
+    const totalWidth = numIcons * iconSize + (numIcons - 1) * iconGap;
+    const totalHeight = iconSize; // assuming 1 row
+
+    const defaultWidth = totalWidth + 40;  // Add padding
+    const defaultHeight = totalHeight + 20;
+    let enlargedSize = [defaultWidth, defaultHeight];
     const defaultSize = [enlargedSize[0] * .5, enlargedSize[1] * .5];
     let targetSize = defaultSize;
     let currentSize = [...targetSize];
@@ -242,7 +252,6 @@
         gl.bindTexture(gl.TEXTURE_2D, background);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-        const iconWrapper = document.getElementById("icons");
         // Position the icon wrapper at the button center
         iconWrapper.style.transform = `
             translate(${currentMouse[0]}px, ${currentMouse[1]}px)
