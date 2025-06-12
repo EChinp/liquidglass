@@ -213,7 +213,8 @@
     let targetMouse = [canvas.width / 2, canvas.height / 2];
     let currentMouse = [...targetMouse];
 
-    let targetSize = [200.0, 70.0];
+    const enlargedSize = [200.0, 70.0];
+    let targetSize = [enlargedSize[0] * .8, enlargedSize[1] * .8];
     let currentSize = [...targetSize];
 
     canvas.addEventListener("mousemove", e => {
@@ -228,7 +229,6 @@
 
         // Optional: animate size for hover effect (e.g., grow slightly near center)
         const defaultSize = targetSize;
-        const enlargedSize = [240.0, 85.0];
         const growNearCenter = Math.exp(-Math.pow((targetMouse[0] - canvas.width / 2) / 300, 2)); // gaussian distance falloff
         targetSize[0] = defaultSize[0] + (enlargedSize[0] - defaultSize[0]) * growNearCenter;
         targetSize[1] = defaultSize[1] + (enlargedSize[1] - defaultSize[1]) * growNearCenter;
