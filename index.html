@@ -230,7 +230,7 @@
     const background = gl.createTexture();
     const image = new Image();
     image.crossOrigin = "anonymous";
-    image.src = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop";
+    image.src = "background.jpeg";
     image.onload = () => {
         gl.bindTexture(gl.TEXTURE_2D, background);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
