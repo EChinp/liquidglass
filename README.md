@@ -1,4 +1,4 @@
-# 🍏 Liquid Glass
+# 🍏 Liquid Crass
 
 ![demo.gif](demo.gif)
 
