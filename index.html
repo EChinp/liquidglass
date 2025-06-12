@@ -95,9 +95,9 @@
         vec2 refractVec = refract(incident, domeNormal, eta);
         vec2 curvedRefractUV = v_uv + refractVec * 0.015;
 
-        vec3 blur = blurBackground(v_uv, u_resolution);
-        vec3 refractedColor = texture2D(u_background, curvedRefractUV).rgb;
-        vec3 base = mix(blur, refractedColor, 0.6);
+        vec3 refracted = texture2D(u_background, curvedRefractUV).rgb;
+        vec3 blurred = blurBackground(curvedRefractUV, u_resolution);
+        vec3 base = mix(refracted, blurred, 0.5);
 
         float edgeFalloff = smoothstep(1.0, 0.0, dist);
         float verticalBand = 1.0 - smoothstep(-1.2, -0.2, local.y);
