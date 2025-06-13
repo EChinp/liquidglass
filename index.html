@@ -68,11 +68,16 @@
 </div>
 <script id="fragmentShader" type="x-shader/x-fragment">
     precision mediump float;
+    uniform float u_dpr;
     uniform sampler2D u_background;
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
     uniform vec2 u_size;
     varying vec2 v_uv;
+
+    float cssPxUV() {
+        return u_dpr / min(u_resolution.x, u_resolution.y);
+    }
 
     float roundedBox(vec2 uv, vec2 center, vec2 size, float radius) {
         vec2 q = abs(uv - center) - size + radius;
@@ -123,7 +128,7 @@
     }
 
     void main() {
-        vec2 pixelUV = v_uv * u_resolution;
+        vec2 pixelUV = (v_uv * u_resolution) / u_dpr;
         vec2 center = u_mouse;
         vec2 size = u_size * 0.5;
 
@@ -196,13 +201,16 @@
 </script>
 <script>
     const canvas = document.getElementById("canvas");
-    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    const gl = canvas.getContext("webgl", { antialias: true }) || canvas.getContext("experimental-webgl", { antialias: true });
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
         gl.viewport(0, 0, canvas.width, canvas.height);
     }
     window.addEventListener("resize", resize);
@@ -269,10 +277,12 @@
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.uniform1i(gl.getUniformLocation(program, "u_background"), 0);
+        const u_dpr = gl.getUniformLocation(program, "u_dpr");
+        gl.uniform1f(u_dpr, window.devicePixelRatio || 1);
         requestAnimationFrame(draw);
     };
 
-    let targetMouse = [canvas.width / 2, canvas.height / 2];
+    let targetMouse = [window.innerWidth  / 2, window.innerHeight / 2];
     let currentMouse = [...targetMouse];
 
     const iconWrapper = document.getElementById("icons");
@@ -287,7 +297,7 @@
     const defaultHeight = totalHeight + 20;
     let enlargedSize = [defaultWidth, defaultHeight];
     const defaultSize = [enlargedSize[0] * .5, enlargedSize[1] * .5];
-    let targetSize = defaultSize;
+    let targetSize = [...defaultSize];
     let currentSize = [...targetSize];
 
     canvas.addEventListener("mousemove", e => {
@@ -307,15 +317,14 @@
         currentMouse[1] += (targetMouse[1] - currentMouse[1]) * speed * delta;
 
         // Optional: animate size for hover effect
-        const growNearCenter = Math.exp(-Math.pow((targetMouse[0] - canvas.width / 2) / 300, 2));
-        targetSize[0] = defaultSize[0] + (enlargedSize[0] - defaultSize[0]) * growNearCenter;
-        targetSize[1] = defaultSize[1] + (enlargedSize[1] - defaultSize[1]) * growNearCenter;
+        targetSize[0] = enlargedSize[0];
+        targetSize[1] = enlargedSize[1];
 
         // Tween size with delta time
         currentSize[0] += (targetSize[0] - currentSize[0]) * speed * delta;
         currentSize[1] += (targetSize[1] - currentSize[1]) * speed * delta;
 
-        gl.viewport(0, 0, canvas.width, canvas.height);
+        resize();
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.uniform2f(u_resolution, canvas.width, canvas.height);
         gl.uniform2f(u_mouse, currentMouse[0], currentMouse[1]);
